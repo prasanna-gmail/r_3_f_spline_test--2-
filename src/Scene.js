@@ -49,39 +49,36 @@ export default function Scene({ ...props }) {
   function Ball2(props) {
     const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
     const [ball2] = useCompoundBody(() => ({
-      mass: 1,
+      mass: 1000,
       ...props,
       shapes: [
-        { type: 'Sphere', args: [40], position: [0, 0, 0] },
+        { type: 'Sphere', args: [45], position: [0, 0, 0] },
 
       ],
     }))
     return <Clone onPointerDown={onClickGroup} ref={ball2} scale={1} position={[0, 0, 0]} object={nodes.Sphere} dispose={null} />
   }
-  function Ground2(props) {
+  function SliderX(props) {
     const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
-
-
-    const [ball2] = useCompoundBody(() => ({
+    const [slider1] = useCompoundBody(() => ({
       mass: 0,
       ...props,
       shapes: [
         { type: 'Plane', position: [0, 0, 0], rotation: [-Math.PI / 2, 0, 0] },
-
       ],
     }))
-
-    // geometry={nodes.Plane.geometry}
-    // material={materials['Plane Material']}
-
-    return <Clone ref={ball2} scale={1} position={[-10, -10, 0]} rotation={[0, 0, 0]} object={nodes.slider} dispose={null} />
-
-    {/* return <group scale={100} dispose={null}>
-      <mesh>
-        <meshBasicMaterial attach="material" />
-        <boxGeometry attach="geometry" />
-      </mesh>
-    </group> */}
+    return <Clone ref={slider1} scale={1} position={[-10, -10, 0]} rotation={[0, 0, 0]} object={nodes.slider} dispose={null} />
+  }
+  function PlaneBig(props) {
+    const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
+    const [PlaneBig1] = useCompoundBody(() => ({
+      mass: 0,
+      ...props,
+      shapes: [
+        { type: 'Plane', position: [0, 0, 0], rotation: [-Math.PI / 2, 0, 0] },
+      ],
+    }))
+    return <Clone ref={PlaneBig1} scale={0.1} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} object={nodes.Plane} dispose={null} />
   }
   function Ground3(props) {
     const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
@@ -103,18 +100,15 @@ export default function Scene({ ...props }) {
   return (
     <>
       <color attach="background" args={['#afbed9']} />
-
       <group {...props} dispose={null}>
-
         <Physics iterations={6}>
-          <Debug scale={1.1} color="black">
 
-            <Ball2 position={[10, 112, 10]} rotation={[10, 10, 10]} />
-            {/*  <Ground2 position={[0, -10, 0]} rotation={[0, 0, 0]} /> */}
-            <Ground2 position={[0, -100, 0]} rotation={[0, 0, 0]} />
-            {/* <Ground rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} /> */}
+          <Ball2 position={[10, 132, 10]} rotation={[10, 10, 10]} />
 
-          </Debug>
+          <SliderX position={[0, -40, 0]} rotation={[1, -2, 1]} />
+          {/* <PlaneBig position={[-10, -40, -10]} scale={100} rotation={[-0.8, 0, 0.2]} /> */}
+          {/* <Ground rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} /> */}
+          <Debug scale={1.1} color="#00FF00"></Debug>
         </Physics>
 
         <PerspectiveCamera
@@ -134,7 +128,8 @@ export default function Scene({ ...props }) {
           receiveShadow
           position={[349.75, 61.5, 81]}
         />
-        {/*  <mesh
+
+        {/* <mesh
           name="Plane"
           geometry={nodes.Plane.geometry}
           material={materials['Plane Material']}
@@ -142,15 +137,15 @@ export default function Scene({ ...props }) {
           receiveShadow
           position={[-17.72, -43.91, -1446.76]}
           rotation={[-Math.PI / 2, 0, 0]}
-        /> */}
-        <mesh
+        />  <mesh
           name="Sphere"
           geometry={nodes.Sphere.geometry}
           material={materials['Sphere Material']}
           castShadow
           receiveShadow
           position={[-226.53, 311.53, 39]}
-        />
+        /> */}
+
 
 
 
