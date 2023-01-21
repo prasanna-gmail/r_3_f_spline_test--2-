@@ -9,6 +9,8 @@ import { Physics, Debug, usePlane, useCompoundBody } from '@react-three/cannon'
 export default function Scene({ ...props }) {
   const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
 
+  const [invertGravity, setInvertGravity] = useState(true)
+
   function Little(props) {
     const { nodes } = useSpline('/bigandsmall.spline')
     const [little] = useCompoundBody(() => ({
@@ -25,30 +27,75 @@ export default function Scene({ ...props }) {
     return <Clone ref={little} scale={0.01} position={[0, 0, 0]} object={nodes.Little} dispose={null} />
   }
 
+  function onClickGroup(ref) {
+    console.log("pkp:  ~ file: App.js:28 ~ onClickGroup ~ ref", ref)
+
+    setInvertGravity(!invertGravity)
+
+    // sphere1.current = ref
+    // sphere1.current.x = 0
+
+    // sphere1.current.object.position.x += 10;
+
+    // chassisApi.position.set(...position)
+    // sphere1.current.position.x += 10;
+    // sphere1.current.position
+    // chassisApi.velocity.set(0, 0, 0)
+    // chassisApi.angularVelocity.set(...angularVelocity)
+    // chassisApi.rotation.set(...rotation)
+    // console.log("pkp:  ~ file: App.js:41 ~ onClickGroup ~ sphere1.current.position", sphere1.current)
+  }
+
   function Ball2(props) {
     const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
     const [ball2] = useCompoundBody(() => ({
       mass: 1,
       ...props,
       shapes: [
-        { type: 'Sphere', args: [1], position: [0, 0, 0] },
+        { type: 'Sphere', args: [40], position: [0, 0, 0] },
 
       ],
     }))
-    return <Clone ref={ball2} scale={1} position={[0, 0, 0]} object={nodes.Sphere} dispose={null} />
+    return <Clone onPointerDown={onClickGroup} ref={ball2} scale={1} position={[0, 0, 0]} object={nodes.Sphere} dispose={null} />
   }
   function Ground2(props) {
     const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
+
+
     const [ball2] = useCompoundBody(() => ({
-      mass: 1,
+      mass: 0,
       ...props,
       shapes: [
-        { type: 'Sphere', args: [1], position: [0, 0, 0] },
+        { type: 'Plane', position: [0, 0, 0], rotation: [-Math.PI / 2, 0, 0] },
 
       ],
     }))
-    return <Clone ref={ball2} scale={1} position={[0, 0, 0]} object={nodes.Sphere} dispose={null} />
+
+    // geometry={nodes.Plane.geometry}
+    // material={materials['Plane Material']}
+
+    return <Clone ref={ball2} scale={1} position={[-10, -10, 0]} rotation={[0, 0, 0]} object={nodes.slider} dispose={null} />
+
+    {/* return <group scale={100} dispose={null}>
+      <mesh>
+        <meshBasicMaterial attach="material" />
+        <boxGeometry attach="geometry" />
+      </mesh>
+    </group> */}
   }
+  function Ground3(props) {
+    const { nodes, materials } = useSpline('https://prod.spline.design/RlGf0SBK5pkSy-nY/scene.splinecode')
+    const [ball2] = usePlane(() => ({ type: 'Static', ...props }))
+    return <Clone ref={ball2} scale={1} position={[0, 0, 0]} object={nodes.slider} dispose={null} />
+  }
+
+
+  function Ground(props) {
+    usePlane(() => ({ type: 'Static', ...props }))
+    // return <ContactShadows position={[0, 0, 0]} scale={1} blur={2} opacity={1} />
+    return <ContactShadows opacity={1} scale={10} blur={1} far={10} resolution={256} color="#FF0000" />
+  }
+
 
 
 
@@ -58,6 +105,18 @@ export default function Scene({ ...props }) {
       <color attach="background" args={['#afbed9']} />
 
       <group {...props} dispose={null}>
+
+        <Physics iterations={6}>
+          <Debug scale={1.1} color="black">
+
+            <Ball2 position={[10, 112, 10]} rotation={[10, 10, 10]} />
+            {/*  <Ground2 position={[0, -10, 0]} rotation={[0, 0, 0]} /> */}
+            <Ground2 position={[0, -100, 0]} rotation={[0, 0, 0]} />
+            {/* <Ground rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} /> */}
+
+          </Debug>
+        </Physics>
+
         <PerspectiveCamera
           name="Camera"
           makeDefault={true}
@@ -75,7 +134,7 @@ export default function Scene({ ...props }) {
           receiveShadow
           position={[349.75, 61.5, 81]}
         />
-        <mesh
+        {/*  <mesh
           name="Plane"
           geometry={nodes.Plane.geometry}
           material={materials['Plane Material']}
@@ -83,7 +142,7 @@ export default function Scene({ ...props }) {
           receiveShadow
           position={[-17.72, -43.91, -1446.76]}
           rotation={[-Math.PI / 2, 0, 0]}
-        />
+        /> */}
         <mesh
           name="Sphere"
           geometry={nodes.Sphere.geometry}
@@ -93,14 +152,7 @@ export default function Scene({ ...props }) {
           position={[-226.53, 311.53, 39]}
         />
 
-        <Physics iterations={6}>
-          <Debug scale={1.1} color="black">
-            <Ground rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} />
 
-            <Ball2 position={[0, 112, 0]} rotation={[0.6, 0.5, 0]} />
-
-          </Debug>
-        </Physics>
 
         <hemisphereLight name="Default Ambient Light" intensity={0.75} color="#eaeaea" />
       </group>
@@ -108,10 +160,5 @@ export default function Scene({ ...props }) {
 
     </>
   )
-}
-
-function Ground(props) {
-  usePlane(() => ({ type: 'Static', ...props }))
-  return <ContactShadows position={[0, -3, 0]} scale={1200} blur={2} far={3} opacity={0.75} />
 }
 
